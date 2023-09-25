@@ -29,9 +29,37 @@ export const useFetchProjects = () => {
     }
   };
 
+  const getSingleData = async (entryId) => {
+    try {
+      const resp = await client.getEntry(entryId);
+
+      const { category, name, sex, voteCount, img } = resp?.fields;
+      const id = resp?.sys?.id;
+      const imgurl = img?.fields?.file?.url;
+      return { category, name, sex, voteCount, id, imgurl };
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+
+  const updateVoteCount = (candidateID, numberOfVotes) => {
+    setcandidates((prevCandidates) => {
+      return prevCandidates.map((candidate) => {
+        if (candidate.id === candidateID) {
+          return {
+            ...candidate,
+            voteCount: candidate.voteCount + numberOfVotes,
+          };
+        }
+        return candidate;
+      });
+    });
+  };
+
   useEffect(() => {
     getData();
   }, []);
 
-  return { loading, candidates };
+  return { loading, candidates, getSingleData, updateVoteCount };
 };

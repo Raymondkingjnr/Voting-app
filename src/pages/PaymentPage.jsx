@@ -1,11 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlutterWaveButton,
   closePaymentModal,
   useFlutterwave,
 } from "flutterwave-react-v3";
+import { useParams } from "react-router-dom";
+import { useFetchProjects } from "../components/FetchCandidates";
+
+// ///////////////////////////////
 
 function PaymentPage() {
+  const { id } = useParams();
+  const { getSingleData, updateVoteCount } = useFetchProjects();
+  const [candidateData, setCandidateData] = useState(null);
+
+  useEffect(() => {
+    const fetchCandidateDetails = async () => {
+      const candidate = await getSingleData(id);
+
+      if (candidate) {
+        setCandidateData(candidate);
+      }
+    };
+    fetchCandidateDetails();
+  }, [id, getSingleData]);
+
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -21,8 +40,10 @@ function PaymentPage() {
     });
   };
 
+  // Payment configuration starts //
+
   const config = {
-    public_key: "FLWPUBK_TEST-ef5fc016d7e2729f5bdbb40c86b2d638-X",
+    public_key: "FLWPUBK_TEST-14ca778553191d29afa60d1a60f35806-X",
     tx_ref: Date.now(),
     amount: 50 * formData.No_votes,
     currency: "NGN",
@@ -52,9 +73,11 @@ function PaymentPage() {
 
   const handleFlutterPayment = useFlutterwave(config);
 
+  // Ends //
+
   return (
     <div className="App">
-      <h1>Hello Test user</h1>
+      <h1>{candidateData?.name}</h1>
       <form>
         <div>
           <label> Email</label>
@@ -98,6 +121,11 @@ function PaymentPage() {
         onClick={() => {
           handleFlutterPayment({
             callback: (response) => {
+              const candidateId = candidateData.id;
+              const numberOfVote = formData.No_votes;
+
+              updateVoteCount(candidateId, numberOfVote);
+
               console.log(response);
               closePaymentModal();
             },
