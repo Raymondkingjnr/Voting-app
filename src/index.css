@@ -62,4 +62,6 @@ img {
 
 .vote-btn {
   width: 100px;
+  list-style: none;
+  text-decoration: none;
 }

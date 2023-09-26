@@ -3,7 +3,7 @@ import { useFetchProjects } from "../components/FetchCandidates";
 import { Link } from "react-router-dom";
 
 const CandidateList = () => {
-  const { loading, candidates, updateVoteCount } = useFetchProjects();
+  const { loading, candidates } = useFetchProjects();
 
   if (loading) {
     return <h1>Loading...</h1>;
@@ -14,7 +14,6 @@ const CandidateList = () => {
       <div className="card-container">
         {candidates?.map((candidate, index) => {
           const { name, category, id, sex, imgurl, voteCount } = candidate;
-          console.log(candidate);
 
           return (
             <div className="items" key={id} index={index}>
@@ -27,9 +26,10 @@ const CandidateList = () => {
               <p>
                 votes : <span>{voteCount}</span>
               </p>
-              <button onClick={() => updateVoteCount(id, 1)}>
-                <Link to={`/payment/${id}`}>Vote</Link>
-              </button>
+
+              <Link to={`/payment/${id}`} className="vote-btn">
+                Vote
+              </Link>
             </div>
           );
         })}
